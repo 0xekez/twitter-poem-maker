@@ -8,13 +8,9 @@ from num2words import num2words
 
 # check if two words rhyme
 def rhymes(a, b):
-    # occasionally for some reason we get tweets that are empty
-    try:
-        a_last_word = a.split()[-1].split('-')[-1]
-        b_last_word = b.split()[-1].split('-')[-1]
-    except IndexError:
-        print("INDEX ERROR\n\ta=={}\n\tb=={}".format(a,b))
-        return False
+    a_last_word = a.split()[-1].split('-')[-1]
+    b_last_word = b.split()[-1].split('-')[-1]
+
     if (a_last_word.lower() in pronouncing.rhymes(b_last_word)):
         return True
 
@@ -35,26 +31,25 @@ def is_number(num):
 def num_syllables(word):
     word = word.lower()
 
-    # Count the syllables in the word.
+    # count the syllables in the word.
     syllables = 0
     for i in range(len(word)):
-        # If the first letter in the word is a vowel then it is a syllable.
+        # if the first letter in the word is a vowel then it is a syllable.
         if i == 0 and word[i] in "aeiouy" :
             syllables += 1
 
-        # Else if the previous letter is not a vowel.
+        # else if the previous letter is not a vowel.
         elif word[i - 1] not in "aeiouy" :
-            # If it is no the last letter in the word and it is a vowel.
+            # if it is no the last letter in the word and it is a vowel.
             if i < len(word) - 1 and word[i] in "aeiouy" :
                 syllables += 1
 
-            # Else if it is the last letter and it is a vowel that is not e.
+            # else if it is the last letter and it is a vowel that is not e.
             elif i == len(word) - 1 and word[i] in "aiouy" :
                 syllables += 1
 
-    # Adjust syllables from 0 to 1.
+    # adjust syllables from 0 to 1.
     if len(word) > 0 and syllables == 0 :
-        syllables == 0
         syllables = 1
 
     return syllables
@@ -103,14 +98,17 @@ def check_tweet(text, exclusions = []):
 
 # returns new verses and updated list of tweets
 def make_poem(s):
-    poem = ''
+    added = []
     for i in range(len(s)-1):
         start = s[i]
         for tweet in s[i:]:
             if rhymes(start, tweet):
-                print('adding ""{}"" and ""{}""'.format(start, tweet))
-                poem += start + '\n' + tweet + '\n'
-    return poem
+                add = start + '\n' + tweet + '\n'
+                # make sure we don't add any duplicates
+                if add not in added:
+                    # print('adding ""{}"" and ""{}""'.format(start, tweet))
+                    added.append(add)
+    return ''.join(line for line in added)
 
 
 # tweets per batch
